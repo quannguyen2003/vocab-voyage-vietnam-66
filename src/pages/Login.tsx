@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,21 @@ export default function Login() {
 
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if user came from registration page and pre-fill email if available
+    if (location.state?.fromRegister) {
+      toast({
+        title: "Đăng ký thành công!",
+        description: "Vui lòng đăng nhập để tiếp tục.",
+      });
+      
+      if (location.state?.email) {
+        setFormData(prev => ({ ...prev, email: location.state.email }));
+      }
+    }
+  }, [location.state, toast]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

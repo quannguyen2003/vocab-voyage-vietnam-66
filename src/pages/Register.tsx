@@ -55,11 +55,11 @@ export default function Register() {
     setTimeout(() => {
       toast({
         title: "Đăng ký thành công!",
-        description: "Tài khoản của bạn đã được tạo.",
+        description: "Vui lòng đăng nhập để tiếp tục.",
       });
       
-      // In a real implementation, you'd navigate after successful API response
-      navigate("/assessment");
+      // Navigate to login page with state after successful registration
+      navigate("/login", { state: { fromRegister: true, email: formData.email } });
       setIsLoading(false);
     }, 1500);
   };
