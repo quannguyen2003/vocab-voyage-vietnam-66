@@ -63,6 +63,15 @@ export default function Login() {
     
     // Simulating API call
     setTimeout(() => {
+      // Store user info in localStorage to persist login state
+      const user = {
+        email: formData.email,
+        name: formData.email.split('@')[0], // Simple name from email for demo
+        isAuthenticated: true,
+      };
+      
+      localStorage.setItem('user', JSON.stringify(user));
+      
       toast({
         title: "Đăng nhập thành công!",
         description: "Chào mừng bạn quay trở lại.",

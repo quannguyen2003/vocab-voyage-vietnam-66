@@ -1,11 +1,54 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, User, LogOut, Settings } from 'lucide-react';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useToast } from "@/components/ui/use-toast";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string; isAuthenticated: boolean } | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    // Check for user data in localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to parse user data", error);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem('user');
+    setUser(null);
+    toast({
+      title: "Đăng xuất thành công",
+      description: "Hẹn gặp lại bạn sớm!",
+    });
+    navigate("/");
+  };
+  
+  // Get initials for avatar fallback
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    return name.charAt(0).toUpperCase();
+  };
   
   return (
     <header className="border-b border-border sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
@@ -31,12 +74,45 @@ export function Header() {
         </nav>
         
         <div className="hidden md:flex items-center gap-4">
-          <Link to="/login">
-            <Button variant="outline" className="px-4">Đăng Nhập</Button>
-          </Link>
-          <Link to="/register">
-            <Button className="px-4">Đăng Ký</Button>
-          </Link>
+          {user && user.isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-vocab-primary/10 text-vocab-primary">
+                      {getInitials(user.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Hồ sơ</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/profile?tab=settings")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Cài đặt</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Đăng xuất</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="outline" className="px-4">Đăng Nhập</Button>
+              </Link>
+              <Link to="/register">
+                <Button className="px-4">Đăng Ký</Button>
+              </Link>
+            </>
+          )}
         </div>
         
         {/* Mobile Menu Button */}
@@ -81,12 +157,62 @@ export function Header() {
               Hồ Sơ
             </Link>
             <div className="flex flex-col gap-2 mt-2">
-              <Link to="/login">
-                <Button variant="outline" className="w-full">Đăng Nhập</Button>
-              </Link>
-              <Link to="/register">
-                <Button className="w-full">Đăng Ký</Button>
-              </Link>
+              {user && user.isAuthenticated ? (
+                <>
+                  <div className="flex items-center gap-3 px-2 py-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-vocab-primary/10 text-vocab-primary">
+                        {getInitials(user.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-sm">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => {
+                      navigate("/profile");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Hồ sơ
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => {
+                      navigate("/profile?tab=settings");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Cài đặt
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Đăng xuất
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="outline" className="w-full" onClick={() => setIsMenuOpen(false)}>Đăng Nhập</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button className="w-full" onClick={() => setIsMenuOpen(false)}>Đăng Ký</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
