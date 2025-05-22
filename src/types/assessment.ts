@@ -4,7 +4,7 @@ export type QuestionType = 'setup' | 'multipleChoice' | 'audio' | 'context' | 'w
 
 // Define answer type
 export type Answer = string | number | {
-  answer: string;
+  answer: string | number;
   correct: boolean;
   difficulty: string;
 }

@@ -56,7 +56,7 @@ export default function Assessment() {
       [currentQuestion.id]: {
         answer: value as string,
         correct: isAnswerCorrect,
-        difficulty: 'medium' // Assuming this is from currentQuestion.difficulty
+        difficulty: currentQuestion.difficulty
       }
     }));
     
@@ -90,9 +90,15 @@ export default function Assessment() {
       return timeAnswer;
     } else if (typeof timeAnswer === 'string') {
       return parseInt(timeAnswer, 10) || 15;
-    } else {
-      return 15; // Default value
+    } else if (timeAnswer && typeof timeAnswer === 'object' && 'answer' in timeAnswer) {
+      const answerValue = timeAnswer.answer;
+      if (typeof answerValue === 'string') {
+        return parseInt(answerValue, 10) || 15;
+      } else if (typeof answerValue === 'number') {
+        return answerValue;
+      }
     }
+    return 15; // Default value
   };
   
   // Function to render the current question based on type
@@ -105,6 +111,7 @@ export default function Assessment() {
           totalQuestions={assessmentQuestions}
           onFinish={handleFinish}
           getTimeValue={getTimeValue}
+          answers={answers}
         />
       );
     }

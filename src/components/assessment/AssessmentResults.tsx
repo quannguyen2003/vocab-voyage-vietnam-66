@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import AIFeedback from "./AIFeedback";
 import { Answer } from "../../types/assessment";
 
 interface AssessmentResultsProps {
@@ -9,13 +10,15 @@ interface AssessmentResultsProps {
   totalQuestions: number;
   onFinish: () => void;
   getTimeValue: () => number;
+  answers: Record<string, Answer>;
 }
 
 const AssessmentResults: React.FC<AssessmentResultsProps> = ({
   correctCount,
   totalQuestions,
   onFinish,
-  getTimeValue
+  getTimeValue,
+  answers
 }) => {
   const score = Math.round((correctCount / totalQuestions) * 100);
   const level = score >= 80 ? 'Cao' : score >= 60 ? 'Trung bình' : 'Cơ bản';
@@ -85,6 +88,12 @@ const AssessmentResults: React.FC<AssessmentResultsProps> = ({
           </CardContent>
         </Card>
       </div>
+      
+      <AIFeedback 
+        answers={answers}
+        correctCount={correctCount}
+        totalQuestions={totalQuestions}
+      />
       
       <Card>
         <CardHeader>
