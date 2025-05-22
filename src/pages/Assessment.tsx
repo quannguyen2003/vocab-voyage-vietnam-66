@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,13 @@ import { CheckCircle, XCircle } from "lucide-react";
 
 // Define question types
 type QuestionType = 'setup' | 'multipleChoice' | 'audio' | 'context' | 'wordFormation' | 'collocation';
+
+// Define answer type to properly type our state
+type Answer = string | number | {
+  answer: string;
+  correct: boolean;
+  difficulty: string;
+}
 
 // Sample questions for the assessment
 const questions = [
@@ -138,7 +144,7 @@ export default function Assessment() {
   const { toast } = useToast();
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string | number>>({});
+  const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
