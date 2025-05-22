@@ -220,6 +220,18 @@ export default function Assessment() {
     return "500 - 1,500 từ";
   };
   
+  // Function to get time value from answers
+  const getTimeValue = (): number => {
+    const timeAnswer = answers['time'];
+    if (typeof timeAnswer === 'number') {
+      return timeAnswer;
+    } else if (typeof timeAnswer === 'string') {
+      return parseInt(timeAnswer, 10) || 15;
+    } else {
+      return 15; // Default value
+    }
+  };
+  
   // Function to render the current question based on type
   const renderQuestion = () => {
     if (showResults) {
@@ -476,7 +488,7 @@ export default function Assessment() {
             </div>
             <div>
               <h3 className="font-medium">3. Thực hành hàng ngày</h3>
-              <p className="text-sm text-muted-foreground">Học {answers['time'] || 15} phút mỗi ngày như bạn đã đặt mục tiêu.</p>
+              <p className="text-sm text-muted-foreground">Học {getTimeValue()} phút mỗi ngày như bạn đã đặt mục tiêu.</p>
             </div>
           </CardContent>
           <CardFooter>
